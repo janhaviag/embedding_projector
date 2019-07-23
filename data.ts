@@ -111,7 +111,8 @@ export class Cluster{
   centroid: DataPoint;
   members: DataPoint[];
 
-  constructor(){};
+    constructor(){
+    }
 
   addCentroid(centroid: DataPoint){
     this.centroid = centroid;
@@ -119,19 +120,32 @@ export class Cluster{
 
   addMembers(members: DataPoint[]){
     this.members = members;
-  }
+  } 
 }  
 
 export class KMeans{
   points: DataPoint[];
   clusters: Cluster[];
 
-  constructor(points:DataPoint[]) {
-    this.points = points;
-    this.clusters = this.createClusters();
-    this.computeClusters();
+  constructor(points: DataPoint[]){
+  this.points = points;
+  this.clusters = this.createClusters();
+  this.computeClusters();
   }
 
+  private createClusters(): Cluster[]{
+    var i: number;
+    var clusters: Cluster[] = [];
+    var centroids = this.points.slice(0,NUM_CLUSTERS);
+    for(i=0; i<NUM_CLUSTERS; i++){
+      var cl = new Cluster();
+      cl.addCentroid(centroids[i])
+      cl.addMembers([])
+      clusters.push(cl)
+    }
+    return clusters;
+  }
+    
   private assert(condition: boolean, message?: string) {
     if (!condition) {
       message = message || 'Assertion failed';
@@ -188,7 +202,7 @@ export class KMeans{
       };
       var cId = distVal.indexOf(Math.min.apply(Math, distVal));
       this.clusters[cId].members.push(this.points[i])
-    }
+      };
   }
 
 }
@@ -230,9 +244,13 @@ export class DataSet {
 
   /** Creates a new Dataset */
   constructor(
-      points: DataPoint[], spriteAndMetadataInfo?: SpriteAndMetadataInfo) {
-    this.points = points;
+    points: DataPoint[], spriteAndMetadataInfo?: SpriteAndMetadataInfo) {
     this.kmeans = new KMeans(points);
+    this.points = []
+    for(let i=0; i<NUM_CLUSTERS; i++)
+    {
+      this.points.push(this.kmeans.clusters[i].centroid)
+    }
     this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
     this.sequences = this.computeSequences(points);
     this.dim = [this.points.length, this.points[0].vector.length];
