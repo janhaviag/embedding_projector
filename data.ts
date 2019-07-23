@@ -110,6 +110,10 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
 export class Cluster{
   centroid: DataPoint[]
   members: DataPoint[]
+
+  constructor(centroid: DataPoint[]) {
+    this.centroid = centroid;
+  }
 }  
 
 export class KMeans{
