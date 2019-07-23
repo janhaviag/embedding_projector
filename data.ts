@@ -118,10 +118,11 @@ export class Cluster{
 
 export class KMeans{
   points: DataPoint[];
-  cluster: Cluster[];
+  clusters: Cluster[];
 
   constructor(points:DataPoint[]) {
     this.points = points;
+    this.clusters = this.createClusters();
   }
 
   private assert(condition: boolean, message?: string) {
@@ -154,9 +155,30 @@ export class KMeans{
     return randind;
   }
 
+  private createClusters(): Cluster[] {
+    var i: number;
+    var clusters: Cluster[];
+    var centroids = this.points.slice(0,NUM_CLUSTERS);
+
+    for(i=0; i<NUM_CLUSTERS; i++){
+      clusters.push(new Cluster(centroids[i])) /* VS complains - error here */
+    }
+    return clusters;
+  }
   
-  private computeClusters(points: DataPoint[], clusters: Cluster[]): Cluster[] {
-    /* Janhavi */
+  private computeClusters(){
+    var i:number; 
+    var j:number;
+    for(i=0; i<this.points.length; i++)
+    {
+      var distVal = Array<number>(NUM_CLUSTERS).fill(0);
+      for(j=0; j<NUM_CLUSTERS; j++)
+      {
+        distVal[j] = this.dist(this.clusters[i].centroid.vector, this.points[i].vector) /* VS complains - error here */
+      };
+      var cId = distVal.indexOf(Math.min.apply(Math, distVal));
+      this.clusters[cId].members.push(this.points[i])
+    }
   }
 
 }
