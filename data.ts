@@ -168,7 +168,7 @@ export class KMeans{
     var centroids = this.randInit(NUM_CLUSTERS, this.points);
 
     for(i=0; i<NUM_CLUSTERS; i++){
-      var cl = new Cluster();
+      var cl : new Cluster() = [];
       cl.addCentroid(centroids[i])
       cl.addMembers([])
       clusters.push(cl)
@@ -184,7 +184,7 @@ export class KMeans{
       var distVal = Array<number>(NUM_CLUSTERS).fill(0);
       for(j=0; j<NUM_CLUSTERS; j++)
       {
-        distVal[j] = this.dist(this.clusters[i].centroid.vector, this.points[i].vector);
+        distVal[j] = this.dist(this.clusters[j].centroid.vector, this.points[i].vector);
       };
       var cId = distVal.indexOf(Math.min.apply(Math, distVal));
       this.clusters[cId].members.push(this.points[i])
