@@ -139,7 +139,7 @@ export class KMeans{
 
   private createClusters(): Cluster[]{
     var i: number;
-    var clusters: Cluster[];
+    var clusters: Cluster[] = [];
     var centroids = this.points.slice(0,NUM_CLUSTERS);
     for(i=0; i<NUM_CLUSTERS; i++){
       var cl = new Cluster();
@@ -175,7 +175,7 @@ export class KMeans{
       var distVal = Array<number>(NUM_CLUSTERS).fill(0);
       for(j=0; j<NUM_CLUSTERS; j++)
       {
-        distVal[j] = this.dist(this.clusters[i].centroid.vector, this.points[i].vector)
+        distVal[j] = this.dist(this.clusters[j].centroid.vector, this.points[i].vector)
       };
       var cId = distVal.indexOf(Math.min.apply(Math, distVal));
       this.clusters[cId].members.push(this.points[i])
@@ -223,8 +223,13 @@ export class DataSet {
   /** Creates a new Dataset */
   constructor(
       points: DataPoint[], spriteAndMetadataInfo?: SpriteAndMetadataInfo) {
-    this.points = points;
+    
     this.kmeans = new KMeans(points);
+    this.points = []
+    for(let i=0; i<NUM_CLUSTERS; i++)
+    {
+      this.points.push(this.kmeans.clusters[i].centroid)
+    }
     this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
     this.sequences = this.computeSequences(points);
     this.dim = [this.points.length, this.points[0].vector.length];
