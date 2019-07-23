@@ -107,42 +107,12 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
   return +sequenceAttr;
 }
 
+
 export class Cluster{
-  centroid: DataPoint[]
-  members: DataPoint[]
-}  
-
-export class KMeans{
-  points: DataPoint[];
-  centroid: DataPoint[];
+  centroid: DataPoint;
   members: DataPoint[];
-
-  constructor(    
-  )
-
-  private assert(condition: boolean, message?: string) {
-    if (!condition) {
-      message = message || 'Assertion failed';
-      throw new Error(message);
-    }
-  }
-
-  private dist(a: Float32Array, b: Float32Array): number {
-    this.assert(a.length === b.length, 'Vectors a and b must be of same length');
-    let result = 0;
-    for (let i = 0; i < a.length; ++i) {
-      let diff = a[i] - b[i];
-      result += diff * diff;
-    }
-    return result;
-  }
-  
-  private computeClusters(points: DataPoint[], clusters: Cluster[]): Cluster[]{
-    /* Janhavi */
-  }
-
 }
-  
+
 /**
  * Dataset contains a DataPoints array that should be treated as immutable. This
  * acts as a working subset of the original data, with cached properties
@@ -153,7 +123,6 @@ export class KMeans{
 export class DataSet {
   points: DataPoint[];
   sequences: Sequence[];
-
   shuffledDataIndices: number[] = [];
   clusters: Cluster[];
 
@@ -344,7 +313,7 @@ export class DataSet {
         this.projections[label] = true;
         for (let i = 0; i < pcaVectors.length; i++) {
           let pointIndex = this.shuffledDataIndices[i];
-          this.points[pointIndex].projections[label] = pcaVectors[i][d];
+          this.kcentroids[pointIndex].projections[label] = pcaVectors[i][d];
         }
       }
     });
