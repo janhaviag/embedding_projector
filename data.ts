@@ -576,9 +576,30 @@ export class DataSet {
     this.tSNEShouldStop = true;
   }
 
+  assert(condition: boolean, message?: string) {
+    if (!condition) {
+      message = message || 'Assertion failed';
+      throw new Error(message);
+    }
+  }
+
+  dist(a: Float32Array, b: Float32Array): number {
+    this.assert(a.length === b.length, 'Vectors a and b must be of same length');
+    let result = 0;
+    for (let i = 0; i < a.length; ++i) {
+      let diff = a[i] - b[i];
+      result += diff * diff;
+    }
+    return result;
+  }
+
   computeClusters(points: DataPoint[], clusters: Cluster[]): Cluster[]{
-    points.forEach(element => {
-      
+    points.forEach(x => {
+      var dist_val = 1000000000;
+      clusters.forEach(y =>{
+
+        dist_val = Math.min(dist(y.centroid.vector, x.vector), dist)
+      })
     });
 
   }
