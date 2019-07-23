@@ -111,8 +111,14 @@ export class Cluster{
   centroid: DataPoint;
   members: DataPoint[];
 
-  constructor(centroid: DataPoint) {
+  constructor(){};
+
+  addCentroid(centroid: DataPoint){
     this.centroid = centroid;
+  }
+
+  addMembers(members: DataPoint[]){
+    this.members = members;
   }
 }  
 
@@ -123,6 +129,7 @@ export class KMeans{
   constructor(points:DataPoint[]) {
     this.points = points;
     this.clusters = this.createClusters();
+    this.computeClusters();
   }
 
   private assert(condition: boolean, message?: string) {
@@ -161,7 +168,10 @@ export class KMeans{
     var centroids = this.randInit(NUM_CLUSTERS, this.points);
 
     for(i=0; i<NUM_CLUSTERS; i++){
-      clusters.push(new Cluster(centroids[i])); 
+      var cl = new Cluster();
+      cl.addCentroid(centroids[i])
+      cl.addMembers([])
+      clusters.push(cl)
     }
     return clusters;
   }
