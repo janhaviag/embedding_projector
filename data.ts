@@ -146,7 +146,7 @@ export class KMeans{
     const copy = points.concat();
     const randind = [];
 
-    /* assert N */
+    this.assert(N >= 1 && Number.isInteger(N), "N must be a positive integer!");
 
     for (let i = 0; i < N; ++i) {
       let idx = Math.floor(Math.random() * copy.length);
