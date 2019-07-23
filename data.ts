@@ -114,11 +114,11 @@ export class Cluster{
 
 export class KMeans{
   points: DataPoint[];
-  centroid: DataPoint[];
-  members: DataPoint[];
+  cluster: Cluster[];
 
-  constructor(    
-  )
+  constructor(points:DataPoint[]) {
+    this.points = points;
+  }
 
   private assert(condition: boolean, message?: string) {
     if (!condition) {
@@ -136,6 +136,15 @@ export class KMeans{
     }
     return result;
   }
+
+  /*private rand(N: number, range: number): ? {
+    const randind = []
+    for (let i = 0; i < N; ++i) {
+      let ind = Math.floor(Math.random() * range)
+      randind.push(ind);
+    }
+    return randind;
+  }*/
   
   private computeClusters(points: DataPoint[], clusters: Cluster[]): Cluster[]{
     /* Janhavi */
