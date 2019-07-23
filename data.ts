@@ -142,7 +142,7 @@ export class KMeans{
     return result;
   }
 
-  private function randInit(N: number, points: DataPoint[]): DataPoint[] {
+  private randInit(N: number, points: DataPoint[]): DataPoint[] {
     const copy = points.concat();
     const randind = [];
 
@@ -158,7 +158,7 @@ export class KMeans{
   private createClusters(): Cluster[] {
     var i: number;
     var clusters: Cluster[];
-    var centroids = this.points.slice(0,NUM_CLUSTERS);
+    var centroids = this.randInit(NUM_CLUSTERS, this.points);
 
     for(i=0; i<NUM_CLUSTERS; i++){
       clusters.push(new Cluster(centroids[i])) /* VS complains - error here */
