@@ -137,16 +137,21 @@ export class KMeans{
     return result;
   }
 
-  /*private rand(N: number, range: number): ? {
-    const randind = []
+  private function randInit(N: number, points: DataPoint[]): DataPoint[] {
+    const copy = points.concat();
+    const randind = [];
+
+    /* assert N */
+
     for (let i = 0; i < N; ++i) {
-      let ind = Math.floor(Math.random() * range)
-      randind.push(ind);
+      let idx = Math.floor(Math.random() * copy.length);
+      randind.push(copy[idx]);
     }
     return randind;
-  }*/
+  }
+
   
-  private computeClusters(points: DataPoint[], clusters: Cluster[]): Cluster[]{
+  private computeClusters(points: DataPoint[], clusters: Cluster[]): Cluster[] {
     /* Janhavi */
   }
 
