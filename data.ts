@@ -132,19 +132,6 @@ export class KMeans{
   this.clusters = this.createClusters();
   this.computeClusters();
   }
-
-  private createClusters(): Cluster[]{
-    var i: number;
-    var clusters: Cluster[] = [];
-    var centroids = this.points.slice(0,NUM_CLUSTERS);
-    for(i=0; i<NUM_CLUSTERS; i++){
-      var cl = new Cluster();
-      cl.addCentroid(centroids[i])
-      cl.addMembers([])
-      clusters.push(cl)
-    }
-    return clusters;
-  }
     
   private assert(condition: boolean, message?: string) {
     if (!condition) {
@@ -176,13 +163,12 @@ export class KMeans{
     return randind;
   }
 
-  private createClusters(): Cluster[] {
+  private createClusters(): Cluster[]{
     var i: number;
-    var clusters: Cluster[];
-    var centroids = this.randInit(NUM_CLUSTERS, this.points);
-
+    var clusters: Cluster[] = [];
+    var centroids = this.points.slice(0,NUM_CLUSTERS);
     for(i=0; i<NUM_CLUSTERS; i++){
-      var cl : new Cluster() = [];
+      var cl = new Cluster();
       cl.addCentroid(centroids[i])
       cl.addMembers([])
       clusters.push(cl)
