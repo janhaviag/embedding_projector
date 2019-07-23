@@ -113,9 +113,17 @@ export class Cluster{
   centroid: DataPoint;
   members: DataPoint[];
 
-  constructor(centroid: DataPoint){
+  constructor(){
+  }
+
+  addCentroid(centroid: DataPoint){
     this.centroid = centroid;
   }
+
+  addMembers(members: DataPoint[]){
+    this.members = members
+  }
+  
 }
 
 
@@ -126,6 +134,7 @@ export class KMeans{
   constructor(points: DataPoint[]){
     this.points = points;
     this.clusters = this.createClusters();
+    this.computeClusters();
   }
 
   private createClusters(): Cluster[]{
@@ -133,7 +142,10 @@ export class KMeans{
     var clusters: Cluster[];
     var centroids = this.points.slice(0,NUM_CLUSTERS);
     for(i=0; i<NUM_CLUSTERS; i++){
-      clusters.push(new Cluster(centroids[i]))
+      var cl = new Cluster();
+      cl.addCentroid(centroids[i])
+      cl.addMembers([])
+      clusters.push(cl)
     }
     return clusters;
   }
@@ -184,7 +196,6 @@ export class DataSet {
   points: DataPoint[];
   sequences: Sequence[];
   shuffledDataIndices: number[] = [];
-  clusters: Cluster[];
   kmeans: KMeans;
 
   /**
@@ -213,7 +224,6 @@ export class DataSet {
   constructor(
       points: DataPoint[], spriteAndMetadataInfo?: SpriteAndMetadataInfo) {
     this.points = points;
-    var centroids = points.slice(0, NUM_CLUSTERS);
     this.kmeans = new KMeans(points);
     this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
     this.sequences = this.computeSequences(points);
@@ -341,11 +351,11 @@ export class DataSet {
       
 
       // Approximate pca vectors by sampling the dimensions.
-      let dim = this.kcentroids[0].vector;
+      let dim = this.points[0].vector.length;
       //this.points = this.points.slice(0,5)
 
       //logging.setModalMessage(null, this.points)
-      let vectors = this.shuffledDataIndices.map(i => this.kcentroids[i].vector);
+      let vectors = this.shuffledDataIndices.map(i => this.points[i].vector);
       if (dim < PCA_SAMPLE_DIM) {
         vectors = vector.projectRandom(vectors, PCA_SAMPLE_DIM);
       }
@@ -387,7 +397,7 @@ export class DataSet {
         this.projections[label] = true;
         for (let i = 0; i < pcaVectors.length; i++) {
           let pointIndex = this.shuffledDataIndices[i];
-          this.kcentroids[pointIndex].projections[label] = pcaVectors[i][d];
+          this.points[pointIndex].projections[label] = pcaVectors[i][d];
         }
       }
     });
