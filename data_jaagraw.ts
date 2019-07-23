@@ -185,6 +185,7 @@ export class DataSet {
   sequences: Sequence[];
   shuffledDataIndices: number[] = [];
   clusters: Cluster[];
+  kmeans: KMeans;
 
   /**
    * This keeps a list of all current projections so you can easily test to see
@@ -213,8 +214,7 @@ export class DataSet {
       points: DataPoint[], spriteAndMetadataInfo?: SpriteAndMetadataInfo) {
     this.points = points;
     var centroids = points.slice(0, NUM_CLUSTERS);
-    this.clusters = 
-    this.computeClusters(points, )
+    this.kmeans = new KMeans(points);
     this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
     this.sequences = this.computeSequences(points);
     this.dim = [this.points.length, this.points[0].vector.length];
