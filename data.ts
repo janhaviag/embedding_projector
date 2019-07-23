@@ -108,10 +108,10 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
 }
 
 export class Cluster{
-  centroid: DataPoint[]
-  members: DataPoint[]
+  centroid: DataPoint;
+  members: DataPoint[];
 
-  constructor(centroid: DataPoint[]) {
+  constructor(centroid: DataPoint) {
     this.centroid = centroid;
   }
 }  
@@ -161,7 +161,7 @@ export class KMeans{
     var centroids = this.randInit(NUM_CLUSTERS, this.points);
 
     for(i=0; i<NUM_CLUSTERS; i++){
-      clusters.push(new Cluster(centroids[i])) /* VS complains - error here */
+      clusters.push(new Cluster(centroids[i])); 
     }
     return clusters;
   }
@@ -174,7 +174,7 @@ export class KMeans{
       var distVal = Array<number>(NUM_CLUSTERS).fill(0);
       for(j=0; j<NUM_CLUSTERS; j++)
       {
-        distVal[j] = this.dist(this.clusters[i].centroid.vector, this.points[i].vector) /* VS complains - error here */
+        distVal[j] = this.dist(this.clusters[i].centroid.vector, this.points[i].vector);
       };
       var cId = distVal.indexOf(Math.min.apply(Math, distVal));
       this.clusters[cId].members.push(this.points[i])
