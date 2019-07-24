@@ -121,8 +121,22 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
     addCentroid(centroid: DataPoint){
       this.centroid = centroid;
       this.centroid.oldMetadata = this.centroid.metadata;
-      this.centroid.metadata = {'class': this.centroid.oldMetadata['class']}
-    }
+      if ('class' in this.centroid.metadata)
+      {
+        this.centroid.metadata = {'class': this.centroid.oldMetadata['class']}
+        this.centroid.metadata['output'] = 'class'
+      }
+      if ('word' in this.centroid.metadata)
+      {
+        this.centroid.metadata = {'word': this.centroid.oldMetadata['word']} 
+        this.centroid.metadata['output'] = 'word'
+      }
+      if ('label' in this.centroid.metadata)
+      {
+        this.centroid.metadata = {'label': this.centroid.oldMetadata['label']}
+        this.centroid.metadata['output'] = 'label'
+      }
+      }
   
     addMembers(members: DataPoint[]){
       this.members = members;
