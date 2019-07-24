@@ -115,8 +115,8 @@ namespace vz_projector {
     members_sum: Float32Array;
     members_count: number;
   
-      constructor(){
-      }
+    constructor(){
+    }
   
     addCentroid(centroid: DataPoint){
       this.centroid = centroid;
@@ -126,15 +126,16 @@ namespace vz_projector {
   
     addMembers(members: DataPoint[]){
       this.members = members;
+    } 
+
+    addMembersSum(members_sum: Float32Array){
+      this.members_sum = members_sum;
     }
 
-    addMembersSum(members_sum: Float32Array){		
-      this.members_sum = members_sum;		
+    addMembersCount(members_count: number){
+      this.members_count = members_count;
     }
 
-    addMembersCount(members_count: number){		
-      this.members_count = members_count;		
-    }
   }  
   
   export class KMeans{
@@ -183,18 +184,16 @@ namespace vz_projector {
       var centroids = this.randInit(NUM_CLUSTERS, this.points);
       for(i=0; i<NUM_CLUSTERS; i++){
         var cl = new Cluster();
-        cl.addCentroid(centroids[i]);		        
-        cl.addMembersSum(centroids[i].vector)		      
-        cl.addMembersCount(0);		
-        cl.addMembers([]);		
+        cl.addMembers([]);
+        cl.addCentroid(centroids[i]);
+        cl.addMembersSum(centroids[i].vector)
+        cl.addMembersCount(0);
         clusters.push(cl);
-
       }
       return clusters;
     }
-    
 
-    addPointMetadata(cId: number, point: DataPoint){
+    private addPointMetadata(cId: number, point: DataPoint){
       this.clusters[cId].centroid.metadata['cluster ID'] = cId
       var label = point.metadata['class'];
       if (label in this.clusters[cId].centroid.metadata)
@@ -210,28 +209,28 @@ namespace vz_projector {
 
     }
 
-    private addArrays(a: Float32Array, b: Float32Array): Float32Array {		        
-      this.assert(a.length === b.length, 'Vectors must be of same length');	
-      let result: Float32Array;		        
-      for (let i = 0; i < a.length; ++i) {		
-        let sum = a[i] + b[i];		
-        result[i] = sum;		
-      }		      
-      return result;		     
-    }	
+    private addArrays(a: Float32Array, b: Float32Array): Float32Array {
+      this.assert(a.length === b.length, 'Vectors must be of same length');
+      let result = new Float32Array(a.length);
+      for (let i = 0; i < a.length; ++i) {
+        let sum = a[i] + b[i];
+        result[i] = sum;
+      }
+      return result;
+    }
 
-    private divideArrayByNumber(a: number, b:Float32Array): Float32Array {		
-      let result: Float32Array;		
-      for (let i = 0; i < b.length; ++i) {		
-        let div = b[i] / a;		
-        result[i] = div;		
-      }		      
-      return result;		
-    }		
+    private divideArrayByNumber(a: number, b:Float32Array): Float32Array {
+      let result = new Float32Array(b.length);
+      for (let i = 0; i < b.length; ++i) {
+        let div = b[i] / a;
+        result[i] = div;
+      }
+      return result;
+    }
 
-    private reassignCentroids(a: Float32Array) {		
-      for (let i = 0; i < a.length; ++i) {		
-        a[i] = 0;		
+    private reassignCentroids(a: Float32Array) {
+      for (let i = 0; i < a.length; ++i) {
+        a[i] = 0;
       }
     }
     
@@ -247,30 +246,34 @@ namespace vz_projector {
           for(j=0; j<NUM_CLUSTERS; j++) 
           {
             distVal[j] = this.dist(this.clusters[j].centroid.vector, this.points[i].vector);
-            this.clusters[j].members_sum = this.addArrays(this.clusters[j].members_sum, this.points[i].vector);
-            this.clusters[j].members_count += 1;
           }
 
           var cId = distVal.indexOf(Math.min.apply(Math, distVal));
-          this.clusters[cId].members.push(this.points[i]);
+          this.clusters[cId].members_sum = this.addArrays(this.clusters[cId].members_sum, this.points[i].vector);
+          this.clusters[cId].members_count += 1;
 
           // add centroid metadata on the last iteration
           if (k == NUM_ITER -1) 
           {
+            this.clusters[cId].members.push(this.points[i]);
             this.addPointMetadata(cId, this.points[i]);
           }
         }
 
         // re-assign clusters (no point to reassign on the last step)
-        if (k != NUM_ITER -1) {
+        if (k != NUM_ITER -1) 
+        {
           for(j=0; j<NUM_CLUSTERS; j++) 
           {
-            this.clusters[j].centroid.vector = this.divideArrayByNumber(this.clusters[j].members_count, this.clusters[j].members_sum);
+            if (this.clusters[j].members_count > 0) 
+            {
+              this.clusters[j].centroid.vector = this.divideArrayByNumber(this.clusters[j].members_count, this.clusters[j].members_sum);
+            }
             this.reassignCentroids(this.clusters[j].members_sum);
             this.clusters[j].members_count = 0;
           }
         }
-        
+
       }
     }
   } 
@@ -314,7 +317,6 @@ namespace vz_projector {
     constructor(
       points: DataPoint[], spriteAndMetadataInfo?: SpriteAndMetadataInfo) {
       this.points = points
-      
       this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
       this.sequences = this.computeSequences(points);
       this.dim = [this.points.length, this.points[0].vector.length];
@@ -890,4 +892,3 @@ namespace vz_projector {
   }
   
   }  // namespace vz_projector
-  
