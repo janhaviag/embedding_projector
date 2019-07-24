@@ -208,8 +208,9 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
     }
 
     private addPointMetadata(cId: number, point: DataPoint){
-      this.clusters[cId].centroid.metadata['cluster ID'] = cId
-      var label = point.metadata['class'];
+      this.clusters[cId].centroid.metadata['cluster ID'] = cId;
+      var out = this.clusters[cId].centroid.metadata['output'];
+      var label = point.metadata[out];
       if (label in this.clusters[cId].centroid.metadata)
       {
         if (typeof(this.clusters[cId].centroid.metadata[label]) == 'number')
@@ -219,9 +220,8 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
       }
       else{
         this.clusters[cId].centroid.metadata[label] = 1;
+        }
       }
-
-    }
 
     private addArrays(a: Float32Array, b: Float32Array): Float32Array {
       this.assert(a.length === b.length, 'Vectors must be of same length');
@@ -440,21 +440,16 @@ export class DataSet {
     });
   }
 
-  callKMeans(alg?:string) {
-    var kmeans = new KMeans(this.points);
+  callKMeans() {
+    this.kmeans = new KMeans(this.points);
     this.points = []
     for(let j=0; j<NUM_CLUSTERS; j++)
     {
       this.points.push(kmeans.clusters[j].centroid)
     }
-    if (alg == "pca") {
-      let vectors = []
-      for(let i=0; i<NUM_CLUSTERS; i++)
-      {
-        vectors.push(this.points[i].vector);
-      }
-      return vectors;
-    }
+    this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
+    this.sequences = this.computeSequences(this.points);
+    this.dim = [this.points.length, this.points[0].vector.length];
   }
 
   
@@ -464,7 +459,7 @@ export class DataSet {
       return Promise.resolve<void>(null);
     }
     return util.runAsyncTask('Computing PCA...', () => {
-      let vectors = this.callKMeans("pca");
+      this.callKMeans();
 
       // Approximate pca vectors by sampling the dimensions.
       let dim = this.points[0].vector.length;
