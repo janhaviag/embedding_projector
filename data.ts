@@ -123,18 +123,23 @@ function getSequenceNextPointIndex(pointMetadata: PointMetadata): number|null {
       this.centroid.oldMetadata = this.centroid.metadata;
       if ('class' in this.centroid.metadata)
       {
-        this.centroid.metadata = {'class': this.centroid.oldMetadata['class']}
-        this.centroid.metadata['output'] = 'class'
+        this.centroid.metadata = {'class': this.centroid.oldMetadata['class']};
+        this.centroid.metadata['output'] = 'class';
       }
       if ('word' in this.centroid.metadata)
       {
-        this.centroid.metadata = {'word': this.centroid.oldMetadata['word']} 
-        this.centroid.metadata['output'] = 'word'
+        this.centroid.metadata = {'word': this.centroid.oldMetadata['word']};
+        this.centroid.metadata['output'] = 'word';
       }
       if ('label' in this.centroid.metadata)
       {
-        this.centroid.metadata = {'label': this.centroid.oldMetadata['label']}
-        this.centroid.metadata['output'] = 'label'
+        this.centroid.metadata = {'label': this.centroid.oldMetadata['label']};
+        this.centroid.metadata['output'] = 'label';
+      }
+      if ('target' in this.centroid.metadata)
+      {
+        this.centroid.metadata = {'target': this.centroid.oldMetadata['target']};
+        this.centroid.metadata['output'] = 'target';
       }
       }
   
@@ -303,6 +308,7 @@ export class DataSet {
   points: DataPoint[];
   sequences: Sequence[];
   shuffledDataIndices: number[] = [];
+  kmeans?: KMeans;
 
   /**
    * This keeps a list of all current projections so you can easily test to see
@@ -445,7 +451,7 @@ export class DataSet {
     this.points = []
     for(let j=0; j<NUM_CLUSTERS; j++)
     {
-      this.points.push(kmeans.clusters[j].centroid)
+      this.points.push(this.kmeans.clusters[j].centroid)
     }
     this.shuffledDataIndices = util.shuffle(util.range(this.points.length));
     this.sequences = this.computeSequences(this.points);
@@ -463,7 +469,7 @@ export class DataSet {
 
       // Approximate pca vectors by sampling the dimensions.
       let dim = this.points[0].vector.length;
-      //let vectors = this.shuffledDataIndices.map(i => this.points[i].vector);
+      let vectors = this.shuffledDataIndices.map(i => this.points[i].vector);
       if (dim > PCA_SAMPLE_DIM) {
         vectors = vector.projectRandom(vectors, PCA_SAMPLE_DIM); 
       }
@@ -524,7 +530,7 @@ export class DataSet {
     this.tSNEShouldStop = false;
     this.tSNEIteration = 0;
 
-    this.callKMeans();
+    //this.callKMeans();
 
     let sampledIndices = this.shuffledDataIndices//.slice(0, TSNE_SAMPLE_SIZE); 
     let step = () => {
@@ -573,7 +579,7 @@ export class DataSet {
     this.hasUmapRun = true;
     this.umap = new UMAP({nComponents, nNeighbors});
 
-    this.callKMeans();
+    //this.callKMeans();
 
     let currentEpoch = 0;
     const epochStepSize = 10;
